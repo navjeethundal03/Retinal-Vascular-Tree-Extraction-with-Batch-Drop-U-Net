@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Retina Vessel Structure Detection</title>
+</head>
+<body>
+    <h1>Upload Retina Image</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="file-input" name="file" accept="image/*">
+        <button type="submit">Upload</button>
+    </form>
+    <h2>Result:</h2>
+    <img id="result-image" src="" alt="Binary Mask" style="display: none;"/>
+    <script>
+        document.getElementById('upload-form').onsubmit = async function (event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('file-input');
+            if (fileInput.files.length === 0) {
+                alert('Please select an image file.');
+                return;
+            }
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const resultImage = document.getElementById('result-image');
+                resultImage.src = url;
+                resultImage.style.display = 'block';
+            } else {
+                alert('Failed to upload image.');
+            }
+        };
+    </script>
+</body>
+</html>
